@@ -159,6 +159,20 @@ export default function Settings() {
               ))}
             </div>
           </div>
+          
+          <div>
+            <h4 className="font-medium text-gray-700 mb-2">支出カテゴリ</h4>
+            <div className="flex flex-wrap gap-2">
+              {['食費', '交通費', '医療費', '娯楽', '買い物', 'その他'].map((category) => (
+                <span
+                  key={category}
+                  className="px-3 py-1 bg-red-100 text-red-800 text-sm rounded-full"
+                >
+                  {category}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
         
         <button className="w-full mt-4 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">
@@ -183,18 +197,4 @@ export default function Settings() {
       </div>
     </div>
   );
-}-gray-700 mb-2">支出カテゴリ</h4>
-            <div className="flex flex-wrap gap-2">
-              {['食費', '交通費', '医療費', '娯楽', '買い物', 'その他'].map((category) => (
-                <span
-                  key={category}
-                  className="px-3 py-1 bg-red-100 text-red-800 text-sm rounded-full"
-                >
-                  {category}
-                </span>
-              ))}
-            </div>
-          </div>
-          
-          <div>
-            <h4 className="font-medium text
+}
