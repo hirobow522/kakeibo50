@@ -1,3 +1,3 @@
 export default function Home() {
-  return <h1 style={{ fontSize: '24px' }}>こんにちは、ヒロリー！</h1>;
+  return <div className="p-4 text-xl">ホーム画面（今月のサマリ表示予定）</div>;
 }
