@@ -5,6 +5,13 @@ export default function Settings() {
   const [currency, setCurrency] = useState('JPY');
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
+  const [showCategoryEdit, setShowCategoryEdit] = useState(false);
+  
+  // カテゴリの状態管理
+  const [incomeCategories, setIncomeCategories] = useState(['給与', 'ボーナス', '副業', 'その他']);
+  const [expenseCategories, setExpenseCategories] = useState(['食費', '交通費', '医療費', '娯楽', '買い物', 'その他']);
+  const [newCategory, setNewCategory] = useState('');
+  const [editingType, setEditingType] = useState('expense'); // 'income' or 'expense'
 
   const handleSave = () => {
     // 設定を保存する処理
@@ -30,6 +37,140 @@ export default function Settings() {
       alert('データをリセットしました');
     }
   };
+
+  const handleCategoryEdit = () => {
+    setShowCategoryEdit(true);
+  };
+
+  const handleAddCategory = () => {
+    if (!newCategory.trim()) {
+      alert('カテゴリ名を入力してください');
+      return;
+    }
+
+    const currentCategories = editingType === 'income' ? incomeCategories : expenseCategories;
+    
+    if (currentCategories.includes(newCategory.trim())) {
+      alert('そのカテゴリは既に存在します');
+      return;
+    }
+
+    if (editingType === 'income') {
+      setIncomeCategories([...incomeCategories, newCategory.trim()]);
+    } else {
+      setExpenseCategories([...expenseCategories, newCategory.trim()]);
+    }
+    
+    setNewCategory('');
+  };
+
+  const handleDeleteCategory = (category, type) => {
+    if (confirm(`「${category}」を削除しますか？`)) {
+      if (type === 'income') {
+        setIncomeCategories(incomeCategories.filter(c => c !== category));
+      } else {
+        setExpenseCategories(expenseCategories.filter(c => c !== category));
+      }
+    }
+  };
+
+  const handleCloseCategoryEdit = () => {
+    setShowCategoryEdit(false);
+    setNewCategory('');
+  };
+
+  // カテゴリ編集画面
+  if (showCategoryEdit) {
+    return (
+      <div className="max-w-2xl mx-auto space-y-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">カテゴリ編集</h2>
+            <button
+              onClick={handleCloseCategoryEdit}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* タブ切り替え */}
+          <div className="flex mb-6 border-b">
+            <button
+              onClick={() => setEditingType('expense')}
+              className={`px-4 py-2 font-medium ${
+                editingType === 'expense'
+                  ? 'text-red-600 border-b-2 border-red-600'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              支出カテゴリ
+            </button>
+            <button
+              onClick={() => setEditingType('income')}
+              className={`px-4 py-2 font-medium ${
+                editingType === 'income'
+                  ? 'text-green-600 border-b-2 border-green-600'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              収入カテゴリ
+            </button>
+          </div>
+
+          {/* 新しいカテゴリ追加 */}
+          <div className="mb-6">
+            <div className="flex space-x-2">
+              <input
+                type="text"
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                placeholder="新しいカテゴリ名"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onKeyPress={(e) => e.key === 'Enter' && handleAddCategory()}
+              />
+              <button
+                onClick={handleAddCategory}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                追加
+              </button>
+            </div>
+          </div>
+
+          {/* カテゴリ一覧 */}
+          <div className="space-y-2">
+            <h4 className="font-medium text-gray-700 mb-3">
+              {editingType === 'income' ? '収入' : '支出'}カテゴリ
+            </h4>
+            
+            {(editingType === 'income' ? incomeCategories : expenseCategories).map((category) => (
+              <div
+                key={category}
+                className="flex justify-between items-center p-3 bg-gray-50 rounded-lg"
+              >
+                <span className="font-medium text-gray-800">{category}</span>
+                <button
+                  onClick={() => handleDeleteCategory(category, editingType)}
+                  className="text-red-500 hover:text-red-700 font-medium"
+                >
+                  削除
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* 保存ボタン */}
+          <button
+            onClick={handleCloseCategoryEdit}
+            className="w-full mt-6 bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+          >
+            変更を保存
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -149,7 +290,7 @@ export default function Settings() {
           <div>
             <h4 className="font-medium text-gray-700 mb-2">収入カテゴリ</h4>
             <div className="flex flex-wrap gap-2">
-              {['給与', 'ボーナス', '副業', 'その他'].map((category) => (
+              {incomeCategories.map((category) => (
                 <span
                   key={category}
                   className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full"
@@ -163,7 +304,7 @@ export default function Settings() {
           <div>
             <h4 className="font-medium text-gray-700 mb-2">支出カテゴリ</h4>
             <div className="flex flex-wrap gap-2">
-              {['食費', '交通費', '医療費', '娯楽', '買い物', 'その他'].map((category) => (
+              {expenseCategories.map((category) => (
                 <span
                   key={category}
                   className="px-3 py-1 bg-red-100 text-red-800 text-sm rounded-full"
@@ -175,7 +316,10 @@ export default function Settings() {
           </div>
         </div>
         
-        <button className="w-full mt-4 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+        <button 
+          onClick={handleCategoryEdit}
+          className="w-full mt-4 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+        >
           カテゴリを編集
         </button>
       </div>
