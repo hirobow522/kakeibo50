@@ -147,7 +147,43 @@ export default function Settings() {
         
         <div className="space-y-4">
           <div>
-            <h4 className="font-medium text-gray-700 mb-2">支出カテゴリ</h4>
+            <h4 className="font-medium text-gray-700 mb-2">収入カテゴリ</h4>
+            <div className="flex flex-wrap gap-2">
+              {['給与', 'ボーナス', '副業', 'その他'].map((category) => (
+                <span
+                  key={category}
+                  className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full"
+                >
+                  {category}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        <button className="w-full mt-4 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+          カテゴリを編集
+        </button>
+      </div>
+
+      {/* アプリ情報 */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">アプリ情報</h3>
+        
+        <div className="space-y-2 text-sm text-gray-600">
+          <div className="flex justify-between">
+            <span>バージョン</span>
+            <span>1.0.0</span>
+          </div>
+          <div className="flex justify-between">
+            <span>最終更新</span>
+            <span>2025年6月15日</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}-gray-700 mb-2">支出カテゴリ</h4>
             <div className="flex flex-wrap gap-2">
               {['食費', '交通費', '医療費', '娯楽', '買い物', 'その他'].map((category) => (
                 <span
