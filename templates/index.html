@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>家計簿アプリ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>家計簿アプリ</h1>
+
+    <div class="summary">
+        <h2>今月の予算</h2>
+        <p>当初予算: {{ initial_budget:,.0f }} 円</p>
+        <p>収入: <span id="total-income">{{ total_income:,.0f }}</span> 円</p>
+        <p>支出: <span id="total-expense">{{ total_expense:,.0f }}</span> 円</p>
+        <p>残り予算: <span id="remaining-budget">{{ remaining_budget:,.0f }}</span> 円</p>
+    </div>
+    
+    <div id="message-area"></div>
+
+    <form id="transaction-form">
+        <select name="type">
+            <option value="expense">支出</option>
+            <option value="income">収入</option>
+        </select>
+        <input type="text" name="category" placeholder="カテゴリ (例: 食費)" required>
+        <input type="number" name="amount" placeholder="金額" required>
+        <button type="submit">追加</button>
+    </form>
+
+    <a href="{{ url_for('history') }}">すべての取引を見る</a>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
