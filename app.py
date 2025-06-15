@@ -62,10 +62,10 @@ def index():
     remaining_budget = INITIAL_BUDGET + total_income - total_expense
 
     return render_template('index.html', 
-                           initial_budget=INITIAL_BUDGET,
-                           total_income=total_income,
-                           total_expense=total_expense,
-                           remaining_budget=remaining_budget)
+                       initial_budget=f'{INITIAL_BUDGET:,.0f}',
+                       total_income=f'{total_income:,.0f}',
+                       total_expense=f'{total_expense:,.0f}',
+                       remaining_budget=f'{remaining_budget:,.0f}')
 
 @app.route('/add', methods=['POST'])
 def add_transaction():
