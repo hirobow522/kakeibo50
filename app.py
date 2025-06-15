@@ -9,7 +9,8 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'your_default_secret_key')
 
 # ステップ1で設定したVercelの環境変数からデータベースURLを取得
-DATABASE_URL = os.environ.get('POSTGRES_URL')
+# 新しいコード（修正後）
+DATABASE_URL = os.environ.get('POSTGRES_URL_NON_POOLING')
 
 # データベース接続を管理する関数
 def get_db_connection():
