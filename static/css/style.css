@@ -1,0 +1,40 @@
+/* static/css/style.css に追記 */
+
+/* メッセージ表示エリア */
+#message-area {
+    margin: 15px 0;
+    font-weight: bold;
+    min-height: 1.2em;
+}
+
+.success-message {
+    color: green;
+}
+.error-message {
+    color: #d9534f;
+}
+
+/* 履歴ページの収入・支出の色分け */
+.income-text {
+    color: blue;
+    font-weight: bold;
+}
+.expense-text {
+    color: red;
+    font-weight: bold;
+}
+
+/* テーブルのスタイル */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+th {
+    background-color: #f2f2f2;
+}
