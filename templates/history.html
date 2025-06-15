@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>取引履歴</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>取引履歴</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>日付</th>
+                <th>タイプ</th>
+                <th>カテゴリ</th>
+                <th>金額</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in transactions %}
+            <tr>
+                <td>{{ t['date'].strftime('%Y-%m-%d %H:%M') }}</td>
+                <td class="{{ 'income-text' if t['type'] == 'income' else 'expense-text' }}">
+                    {{ '収入' if t['type'] == 'income' else '支出' }}
+                </td>
+                <td>{{ t['category'] }}</td>
+                <td>{{ "%.0f"|format(t['amount']|float) }} 円</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4">取引履歴がありません。</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <a href="{{ url_for('index') }}">ホームに戻る</a>
+</body>
+</html>
