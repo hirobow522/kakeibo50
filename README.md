@@ -22,8 +22,10 @@
 
 ### 1. リポジトリをクローン
 
-git clone [https://github.com/hirobow522/kakeibo50.git](https://github.com/hirobow522/kakeibo50.git)
+```bash
+git clone https://github.com/hirobow522/kakeibo50.git
 cd kakeibo50
+```
 
 ### 2. 仮想環境の作成と有効化
 
@@ -43,9 +45,11 @@ pip install -r requirements.txt
 
 プロジェクトのルートディレクトリに `.env` という名前のファイルを作成し、以下のようにデータベース接続URLを設定します。
 
+
 # .env ファイルの中身
 # 値はご自身のSupabaseプロジェクトのものに置き換えてください
 POSTGRES_URL_NON_POOLING="postgresql://postgres:[YOUR-PASSWORD]@[YOUR-HOST].supabase.co:5432/postgres"
+
 
 **注意:** `.env` ファイルは `.gitignore` に含まれているため、GitHubにはアップロードされません。
 
