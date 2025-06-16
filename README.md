@@ -30,32 +30,42 @@ cd kakeibo50
 ### 2. 仮想環境の作成と有効化
 
 **Windowsの場合:**
+```bash
 python -m venv venv
 .\venv\Scripts\activate
+```
 
 **Mac/Linuxの場合:**
+```bash
 python3 -m venv venv
 source venv/bin/activate
+```
 
 ### 3. 必要なライブラリのインストール
 
+```bash
 pip install -r requirements.txt
+```
 
 ### 4. 環境変数の設定
 
 プロジェクトのルートディレクトリに `.env` という名前のファイルを作成し、以下のようにデータベース接続URLを設定します。
 
 
+```
 # .env ファイルの中身
 # 値はご自身のSupabaseプロジェクトのものに置き換えてください
 POSTGRES_URL_NON_POOLING="postgresql://postgres:[YOUR-PASSWORD]@[YOUR-HOST].supabase.co:5432/postgres"
+```
 
 
 **注意:** `.env` ファイルは `.gitignore` に含まれているため、GitHubにはアップロードされません。
 
 ### 5. アプリケーションの実行
 
+```bash
 flask run
+```
 
 ブラウザで `http://127.0.0.1:5000` にアクセスすると、アプリケーションが表示されます。
 
@@ -68,6 +78,7 @@ flask run
 
 ## 📁 プロジェクト構成
 
+```
 .
 ├── app.py              # Flaskメインアプリケーション
 ├── requirements.txt      # 依存ライブラリ一覧
@@ -80,3 +91,4 @@ flask run
 │   └── history.html
 ├── .gitignore          # Git無視ファイル
 └── README.md             # このファイル
+```
