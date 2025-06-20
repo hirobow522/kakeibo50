@@ -2,3 +2,6 @@
 Flask
 gunicorn
 psycopg2-binary
+Flask-Login
+Flask-WTF
+email_validator
