@@ -1,55 +1,85 @@
-# app.py
 import os
 import psycopg2
 from psycopg2.extras import DictCursor
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 from decimal import Decimal, InvalidOperation
 
-app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'your_default_secret_key')
+# --- ログイン機能のためのライブラリをインポート ---
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import DataRequired
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 
-# ステップ1で設定したVercelの環境変数からデータベースURLを取得
-# 新しいコード（修正後）
+app = Flask(__name__)
+# Flask-WTF と Flask-Login のためにSECRET_KEYが必須
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your_default_secret_key_for_dev')
+
+# --- ログイン機能のための設定 ---
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login' # 未ログイン時にリダイレクトする先
+login_manager.login_message = "このページにアクセスするにはログインが必要です。"
+
+# --- ユーザーモデルの定義 (今回はシンプルに一つだけのユーザー) ---
+class User(UserMixin):
+    def __init__(self, id):
+        self.id = id
+
+# 仮のユーザーデータ (本来はデータベースで管理)
+# 今回はID '1' のユーザーしかいないという想定
+users = {'1': User('1')}
+
+@login_manager.user_loader
+def load_user(user_id):
+    return users.get(user_id)
+
+# --- ログインフォームの定義 ---
+class LoginForm(FlaskForm):
+    # 今回はユーザー名は不要なのでパスワードのみ
+    password = PasswordField('パスワード', validators=[DataRequired()])
+    submit = SubmitField('ログイン')
+
+
+# --- データベース接続 (変更なし) ---
 DATABASE_URL = os.environ.get('POSTGRES_URL_NON_POOLING')
 
-# データベース接続を管理する関数
 def get_db_connection():
     conn = psycopg2.connect(DATABASE_URL, cursor_factory=DictCursor)
     return conn
-
-# データベースにテーブルがなければ作成する関数
-def init_db():
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute('''
-            CREATE TABLE IF NOT EXISTS transactions (
-                id SERIAL PRIMARY KEY,
-                type VARCHAR(10) NOT NULL,
-                category VARCHAR(50) NOT NULL,
-                amount NUMERIC(10, 2) NOT NULL,
-                date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-            );
-        ''')
-        conn.commit()
-        cur.close()
-        conn.close()
-    except Exception as e:
-        print(f"Database initialization failed: {e}")
-
-# アプリ起動時にテーブルの存在を確認・作成
-with app.app_context():
-    init_db()
     
-# 初期予算（例として50000円）
 INITIAL_BUDGET = Decimal('50000')
 
+# --- ルート(URL)の定義 ---
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    form = LoginForm()
+    if form.validate_on_submit():
+        # --- ここでパスワードをチェック ---
+        # 重要：このパスワードを、ご自身で決めた安全なものに変更してください
+        if form.password.data == 'your_secret_password':
+            user = users['1']
+            login_user(user)
+            return redirect(url_for('index'))
+        else:
+            flash('パスワードが正しくありません。')
+    return render_template('login.html', form=form)
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+
 @app.route('/')
+@login_required # このページはログインが必須
 def index():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # 収入と支出の合計を正しく計算
     cur.execute('SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE type = %s', ('income',))
     total_income = cur.fetchone()[0]
 
@@ -62,13 +92,15 @@ def index():
     remaining_budget = INITIAL_BUDGET + total_income - total_expense
 
     return render_template('index.html', 
-                       initial_budget=f'{INITIAL_BUDGET:,.0f}',
-                       total_income=f'{total_income:,.0f}',
-                       total_expense=f'{total_expense:,.0f}',
-                       remaining_budget=f'{remaining_budget:,.0f}')
+                           initial_budget=f'{INITIAL_BUDGET:,.0f}',
+                           total_income=f'{total_income:,.0f}',
+                           total_expense=f'{total_expense:,.0f}',
+                           remaining_budget=f'{remaining_budget:,.0f}')
 
 @app.route('/add', methods=['POST'])
+@login_required # 取引の追加もログイン必須
 def add_transaction():
+    # ... (この関数の中身は変更なし)
     trans_type = request.form.get('type')
     category = request.form.get('category')
     amount_str = request.form.get('amount')
@@ -89,7 +121,6 @@ def add_transaction():
                  (trans_type, category, amount))
     conn.commit()
 
-    # 更新後の合計を再計算
     cur.execute('SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE type = %s', ('income',))
     total_income = cur.fetchone()[0]
 
@@ -101,7 +132,6 @@ def add_transaction():
     
     remaining_budget = INITIAL_BUDGET + total_income - total_expense
 
-    # 画面更新用の最新データを返す
     return jsonify({
         'success': True,
         'message': '✓ 取引を追加しました。',
@@ -110,8 +140,11 @@ def add_transaction():
         'remaining_budget': f'{remaining_budget:,.0f}'
     })
 
+
 @app.route('/history')
+@login_required # 履歴の閲覧もログイン必須
 def history():
+    # ... (この関数の中身は変更なし)
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute('SELECT * FROM transactions ORDER BY date DESC')
