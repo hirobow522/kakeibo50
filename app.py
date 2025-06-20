@@ -60,7 +60,7 @@ def login():
     if form.validate_on_submit():
         # --- ここでパスワードをチェック ---
         # 重要：このパスワードを、ご自身で決めた安全なものに変更してください
-        if form.password.data == 'your_secret_password':
+        if form.password.data == 'Hiro0522Robi0124':
             user = users['1']
             login_user(user)
             return redirect(url_for('index'))
