@@ -53,7 +53,7 @@ def login():
     
     form = LoginForm()
     if form.validate_on_submit():
-        if form.password.data == 'your_secret_password': # ご自身のパスワードに変更してください
+        if form.password.data == 'Hiro0522Robi0124': # ご自身のパスワードに変更してください
             user = users['1']
             login_user(user)
             # ★追加：ログイン成功時にゲストデータを削除
