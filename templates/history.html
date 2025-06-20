@@ -35,5 +35,10 @@
     </table>
     <br>
     <a href="{{ url_for('index') }}">ホームに戻る</a>
+    {% if current_user.is_authenticated %}
+      <div style="text-align: right;">
+        <a href="{{ url_for('logout') }}">ログアウト</a>
+      </div>
+    {% endif %}
 </body>
 </html>
