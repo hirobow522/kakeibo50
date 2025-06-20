@@ -7,6 +7,13 @@
 </head>
 <body>
     <h1>取引履歴</h1>
+
+    {% if not current_user.is_authenticated %}
+      <div class="guest-notice">
+        <p>現在、ゲストモードで動作しています。追加したデータはブラウザを閉じるとリセットされます。<br>データを保存するには、<a href="{{ url_for('login') }}">ログイン</a>してください。</p>
+      </div>
+    {% endif %}
+
     <table>
         <thead>
             <tr>
