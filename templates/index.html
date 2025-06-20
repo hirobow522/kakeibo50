@@ -31,5 +31,10 @@
     <a href="{{ url_for('history') }}">すべての取引を見る</a>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% if current_user.is_authenticated %}
+      <div style="text-align: right;">
+        <a href="{{ url_for('logout') }}">ログアウト</a>
+      </div>
+    {% endif %}
 </body>
 </html>
