@@ -170,11 +170,10 @@ def add_transaction():
     })
 
 @app.route('/history')
-# ★変更：ログイン必須を外す
 def history():
     transactions = []
     if current_user.is_authenticated:
-        # --- ログインしているユーザーの処理 ---
+        # --- ログインしているユーザーの処理 (変更なし) ---
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute('SELECT * FROM transactions ORDER BY date DESC')
@@ -182,9 +181,30 @@ def history():
         cur.close()
         conn.close()
     else:
-        # --- ゲストの処理 ---
-        # セッションからデータを取得し、新しいものが上に来るように逆順にする
-        transactions = sorted(session.get('guest_transactions', []), key=lambda x: x['date'], reverse=True)
+        # --- ゲストの処理 (★ここを修正) ---
+        guest_transactions_raw = session.get('guest_transactions', [])
+
+        # 日付の文字列をdatetimeオブジェクトに変換するためのリストを準備
+        temp_transactions = []
+        for t in guest_transactions_raw:
+            # 辞書のコピーを作成
+            new_t = t.copy()
+            # 文字列からdatetimeオブジェクトへ変換
+            try:
+                new_t['date'] = datetime.strptime(t['date'], '%Y-%m-%d %H:%M:%S')
+            except (ValueError, TypeError):
+                # 変換に失敗した場合は、現在時刻などを割り当てるか、元の文字列のままにする
+                # ここでは元の文字列のままにするが、エラーを防ぐためテンプレート側での配慮も必要
+                new_t['date'] = t['date']
+            temp_transactions.append(new_t)
+
+        # 新しく変換したdatetimeオブジェクトでソート
+        # ソートがエラーにならないように、dateがdatetimeオブジェクトであるものだけを対象にする
+        transactions = sorted(
+            [t for t in temp_transactions if isinstance(t.get('date'), datetime)], 
+            key=lambda x: x['date'], 
+            reverse=True
+        )
 
     return render_template('history.html', transactions=transactions)
-  
+
